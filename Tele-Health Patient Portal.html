@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eff5f4">
+  <meta name="description" content="NOVA333X Tele-Health Patient Portal — a privacy-first patient care interface concept with simulated appointment and wellness workflows.">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>NOVA333X — Tele-Health Patient Portal | Concept</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eff5f4;
+      --surface: #ffffff;
+      --surface-soft: #f6f9f8;
+      --ink: #20333a;
+      --muted: #71838a;
+      --line: #dce7e5;
+      --teal: #167f78;
+      --teal-strong: #116c67;
+      --teal-soft: #e4f2ef;
+      --blue: #6386a1;
+      --blue-soft: #eaf1f6;
+      --amber: #a76e35;
+      --amber-soft: #f7efe5;
+      --rose: #a85f6d;
+      --rose-soft: #f7ecee;
+      --shadow: 0 16px 48px #26433d12;
+      --sans: Inter, "Segoe UI", Arial, sans-serif;
+      --ease: cubic-bezier(.2,.8,.2,1);
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #10191c;
+      --surface: #172326;
+      --surface-soft: #1d2b2e;
+      --ink: #e7efed;
+      --muted: #9aadaa;
+      --line: #2b3b3d;
+      --teal: #72c6b8;
+      --teal-strong: #8bd6c9;
+      --teal-soft: #203c3a;
+      --blue: #9bbad0;
+      --blue-soft: #263743;
+      --amber: #e3b27e;
+      --amber-soft: #3a3027;
+      --rose: #df9da9;
+      --rose-soft: #3c292e;
+      --shadow: 0 18px 50px #0003;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--bg); scroll-behavior: smooth; }
+    body { min-width: 320px; margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+    button, input, select, textarea { font: inherit; }
+    button { color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+    [hidden] { display: none !important; }
+    .preloader { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; background: var(--bg); transition: opacity .55s var(--ease), visibility .55s; }
+    .preloader.done { visibility: hidden; opacity: 0; }
+    .loader-content { display: grid; justify-items: center; gap: 14px; color: var(--teal); }
+    .loader-emblem { width: 52px; height: 52px; animation: breathe 1.8s ease-in-out infinite; }
+    .loader-name { color: var(--ink); font-size: 13px; font-weight: 800; letter-spacing: .16em; }
+    .loader-name small { display: block; margin-top: 5px; color: var(--muted); font-size: 8px; font-weight: 650; letter-spacing: .18em; text-align: center; }
+    @keyframes breathe { 50% { transform: scale(1.08); filter: drop-shadow(0 0 12px color-mix(in srgb, var(--teal) 35%, transparent)); } }
+    .layout { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
+    .sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; padding: 23px 17px 18px; border-right: 1px solid var(--line); background: var(--surface); }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 1px 5px 25px; }
+    .brand-mark { width: 39px; height: 39px; display: grid; flex: none; place-items: center; border: 1px solid color-mix(in srgb, var(--teal) 35%, var(--line)); border-radius: 12px; background: var(--teal-soft); color: var(--teal); }
+    .brand-mark svg { width: 25px; height: 25px; }
+    .brand-name { font-size: 13px; font-weight: 850; letter-spacing: .105em; line-height: 1; }
+    .brand-name small { display: block; margin-top: 6px; color: var(--muted); font-size: 8px; font-weight: 700; letter-spacing: .11em; }
+    .patient-card { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); }
+    .avatar { width: 36px; height: 36px; display: grid; flex: none; place-items: center; border-radius: 50%; background: var(--teal-soft); color: var(--teal); font-size: 12px; font-weight: 800; }
+    .patient-card strong { display: block; font-size: 11px; }
+    .patient-card small { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .nav-label { margin: 23px 0 9px 9px; color: var(--muted); font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .side-nav { display: grid; gap: 4px; }
+    .side-nav button { min-height: 39px; display: flex; align-items: center; gap: 11px; padding: 0 10px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-size: 11px; font-weight: 650; text-align: left; transition: background .2s, color .2s; }
+    .side-nav button:hover, .side-nav button.active { background: var(--teal-soft); color: var(--teal-strong); }
+    .side-nav svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .side-spacer { flex: 1; }
+    .privacy-note { padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-soft); color: var(--muted); font-size: 9px; line-height: 1.65; }
+    .privacy-note strong { display: block; margin-bottom: 4px; color: var(--teal); font-size: 9px; }
+    .sidebar-foot { margin-top: 12px; padding: 12px 4px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 8px; }
+    .main { min-width: 0; }
+    .topbar { position: sticky; z-index: 10; top: 0; min-height: 70px; display: flex; align-items: center; gap: 14px; padding: 0 clamp(18px, 3vw, 42px); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 91%, transparent); backdrop-filter: blur(16px); }
+    .menu-toggle { width: 36px; height: 36px; display: none; flex: none; align-content: center; justify-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); }
+    .menu-toggle span { width: 15px; height: 1.5px; background: currentColor; transition: transform .2s; }
+    .menu-toggle[aria-expanded="true"] span:first-child { transform: translateY(3.25px) rotate(45deg); }
+    .menu-toggle[aria-expanded="true"] span:last-child { transform: translateY(-3.25px) rotate(-45deg); }
+    .crumb { color: var(--muted); font-size: 10px; font-weight: 600; }
+    .crumb strong { color: var(--ink); font-weight: 750; }
+    .top-spacer { flex: 1; }
+    .search { position: relative; width: min(230px, 24vw); }
+    .search svg { position: absolute; top: 10px; left: 11px; width: 15px; height: 15px; fill: none; stroke: var(--muted); stroke-width: 1.7; }
+    .search input { width: 100%; height: 37px; padding: 0 11px 0 35px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); font-size: 11px; }
+    .search input::placeholder { color: var(--muted); }
+    .top-btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); font-size: 10px; font-weight: 750; white-space: nowrap; }
+    .top-btn:hover, .icon-btn:hover { border-color: var(--teal); color: var(--teal); }
+    .top-btn.primary { border-color: var(--teal); background: var(--teal); color: #fff; }
+    :root[data-theme="dark"] .top-btn.primary { color: #10201e; }
+    .icon-btn { width: 37px; height: 37px; display: grid; flex: none; place-items: center; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--muted); }
+    .icon-btn svg { width: 17px; height: 17px; }
+    .content { width: min(100%, 1580px); margin: auto; padding: 25px clamp(18px, 3vw, 42px) 35px; }
+    .eyebrow { color: var(--teal); font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .welcome { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin: 2px 0 21px; }
+    h1 { margin: 6px 0 5px; font-size: clamp(24px, 3vw, 34px); font-weight: 750; letter-spacing: -.045em; line-height: 1.15; }
+    .welcome p { margin: 0; color: var(--muted); font-size: 12px; }
+    .welcome-date { padding-bottom: 4px; color: var(--muted); font-size: 10px; font-weight: 650; white-space: nowrap; }
+    .demo-banner { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 17px; padding: 11px 14px; border: 1px solid color-mix(in srgb, var(--amber) 34%, var(--line)); border-radius: 10px; background: var(--amber-soft); color: var(--ink); font-size: 10px; line-height: 1.6; }
+    .demo-banner svg { width: 16px; height: 16px; flex: none; margin-top: 1px; color: var(--amber); }
+    .demo-banner strong { color: var(--amber); }
+    .grid { display: grid; grid-template-columns: minmax(0, 1.58fr) minmax(280px, .92fr); gap: 15px; align-items: start; }
+    .column { min-width: 0; display: grid; gap: 15px; }
+    .card { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: var(--shadow); }
+    .card-head { min-height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 17px; border-bottom: 1px solid var(--line); }
+    .card-title { font-size: 12px; font-weight: 760; letter-spacing: -.01em; }
+    .card-subtitle { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .text-action { padding: 4px 0; border: 0; background: transparent; color: var(--teal); font-size: 9px; font-weight: 750; }
+    .appointment { position: relative; padding: 18px; background: linear-gradient(120deg, var(--surface) 30%, var(--teal-soft)); }
+    .appointment::after { position: absolute; top: -50px; right: 2%; width: 200px; height: 200px; border: 1px solid color-mix(in srgb, var(--teal) 14%, transparent); border-radius: 50%; content: ""; pointer-events: none; }
+    .appointment::before { position: absolute; top: -22px; right: 8%; width: 145px; height: 145px; border: 1px solid color-mix(in srgb, var(--teal) 12%, transparent); border-radius: 50%; content: ""; pointer-events: none; }
+    .appointment-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .appointment-top .eyebrow { font-size: 8px; }
+    .status { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 99px; background: var(--teal-soft); color: var(--teal-strong); font-size: 8px; font-weight: 750; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+    .appointment h2 { position: relative; z-index: 1; max-width: 440px; margin: 12px 0 5px; font-size: 20px; letter-spacing: -.035em; line-height: 1.25; }
+    .appointment-desc { position: relative; z-index: 1; margin: 0; color: var(--muted); font-size: 10px; }
+    .doctor-line { position: relative; z-index: 1; display: flex; align-items: center; gap: 9px; margin-top: 17px; }
+    .doctor-avatar { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid color-mix(in srgb, var(--blue) 25%, var(--line)); border-radius: 50%; background: var(--blue-soft); color: var(--blue); font-size: 10px; font-weight: 800; }
+    .doctor-line strong { display: block; font-size: 10px; }
+    .doctor-line small { display: block; margin-top: 2px; color: var(--muted); font-size: 8px; }
+    .appointment-actions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
+    .action-btn { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 9px; font-weight: 750; }
+    .action-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .action-btn.primary { border-color: var(--teal); background: var(--teal); color: #fff; }
+    :root[data-theme="dark"] .action-btn.primary { color: #10201e; }
+    .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .metric { min-width: 0; padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); box-shadow: var(--shadow); }
+    .metric-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; color: var(--muted); font-size: 8px; font-weight: 700; }
+    .metric-icon { width: 26px; height: 26px; display: grid; flex: none; place-items: center; border-radius: 8px; background: var(--teal-soft); color: var(--teal); }
+    .metric-icon.blue { background: var(--blue-soft); color: var(--blue); }
+    .metric-icon.amber { background: var(--amber-soft); color: var(--amber); }
+    .metric-icon.rose { background: var(--rose-soft); color: var(--rose); }
+    .metric-icon svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .metric-value { margin-top: 11px; font-size: clamp(18px, 2.2vw, 24px); font-weight: 760; letter-spacing: -.04em; line-height: 1; }
+    .metric-unit { margin-left: 3px; color: var(--muted); font-size: 9px; font-weight: 600; letter-spacing: 0; }
+    .metric-foot { display: flex; align-items: center; gap: 5px; margin-top: 8px; color: var(--muted); font-size: 8px; }
+    .metric-foot strong { color: var(--teal); font-weight: 750; }
+    .sparkline { width: 100%; height: 29px; margin-top: 6px; overflow: visible; }
+    .sparkline path { fill: none; stroke: var(--teal); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sparkline .area { fill: color-mix(in srgb, var(--teal) 12%, transparent); stroke: none; }
+    .chart-area { padding: 13px 15px 11px; }
+    .chart-summary { display: flex; align-items: baseline; gap: 8px; }
+    .chart-summary strong { font-size: 21px; letter-spacing: -.04em; }
+    .chart-summary span { color: var(--teal); font-size: 9px; font-weight: 700; }
+    .chart-caption { margin-top: 3px; color: var(--muted); font-size: 8px; }
+    .vitals-chart { width: 100%; height: 120px; margin-top: 9px; }
+    .vitals-chart .gridline { stroke: var(--line); stroke-dasharray: 3 5; stroke-width: 1; }
+    .vitals-chart .area { fill: color-mix(in srgb, var(--teal) 11%, transparent); }
+    .vitals-chart .line { fill: none; stroke: var(--teal); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .vitals-chart circle { fill: var(--surface); stroke: var(--teal); stroke-width: 2; }
+    .chart-label { fill: var(--muted); font: 8px var(--sans); }
+    .chart-legend { display: flex; justify-content: space-between; gap: 8px; margin-top: 5px; color: var(--muted); font-size: 8px; }
+    .legend-key { display: flex; align-items: center; gap: 6px; }
+    .legend-key i { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); }
+    .legend-key span { color: var(--muted); }
+    .schedule-list { padding: 4px 16px; }
+    .schedule-item { display: grid; grid-template-columns: 47px 3px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 61px; border-bottom: 1px solid var(--line); }
+    .schedule-item:last-child { border-bottom: 0; }
+    .schedule-time { color: var(--muted); font-size: 9px; font-weight: 700; white-space: pre-line; }
+    .schedule-marker { width: 3px; height: 31px; border-radius: 3px; background: var(--teal); }
+    .schedule-marker.blue { background: var(--blue); }
+    .schedule-marker.amber { background: var(--amber); }
+    .schedule-info strong { display: block; font-size: 10px; }
+    .schedule-info small { display: block; margin-top: 2px; color: var(--muted); font-size: 8px; }
+    .schedule-tag { padding: 4px 7px; border-radius: 6px; background: var(--teal-soft); color: var(--teal); font-size: 7px; font-weight: 750; white-space: nowrap; }
+    .schedule-tag.blue { background: var(--blue-soft); color: var(--blue); }
+    .schedule-tag.amber { background: var(--amber-soft); color: var(--amber); }
+    .care-list { display: grid; gap: 10px; padding: 13px 15px 15px; }
+    .care-item { display: flex; align-items: center; gap: 10px; }
+    .care-icon { width: 34px; height: 34px; display: grid; flex: none; place-items: center; border-radius: 9px; background: var(--blue-soft); color: var(--blue); }
+    .care-icon.teal { background: var(--teal-soft); color: var(--teal); }
+    .care-icon.amber { background: var(--amber-soft); color: var(--amber); }
+    .care-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .care-info { min-width: 0; flex: 1; }
+    .care-info strong { display: block; font-size: 9px; }
+    .care-info small { display: block; margin-top: 2px; color: var(--muted); font-size: 8px; }
+    .care-item .text-action { flex: none; }
+    .doctor-card { display: flex; align-items: center; gap: 12px; padding: 15px; }
+    .doctor-photo { width: 46px; height: 46px; display: grid; flex: none; place-items: center; border-radius: 13px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; }
+    .doctor-info { min-width: 0; flex: 1; }
+    .doctor-info strong { display: block; font-size: 10px; }
+    .doctor-info small { display: block; margin-top: 3px; color: var(--muted); font-size: 8px; }
+    .available { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; color: var(--teal); font-size: 8px; font-weight: 700; }
+    .available i { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+    .privacy-footer { display: flex; align-items: flex-start; gap: 9px; margin-top: 15px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: 8px; line-height: 1.65; }
+    .privacy-footer svg { width: 15px; height: 15px; flex: none; color: var(--teal); }
+    .site-footer { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 22px; padding: 18px 3px 4px; border-top: 1px solid var(--line); color: var(--muted); font-size: 9px; }
+    .footer-copy { display: grid; gap: 4px; }
+    .footer-copy strong { color: var(--ink); font-size: 10px; }
+    .footer-social { display: flex; align-items: center; gap: 8px; }
+    .footer-social a { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--muted); transition: border-color .2s, color .2s, transform .2s; }
+    .footer-social a:hover { transform: translateY(-2px); border-color: var(--teal); color: var(--teal); }
+    .footer-social svg { width: 16px; height: 16px; fill: currentColor; }
+    .overlay { position: fixed; z-index: 30; inset: 0; visibility: hidden; background: #10201e88; opacity: 0; transition: opacity .25s, visibility .25s; }
+    .overlay.open { visibility: visible; opacity: 1; }
+    .drawer { position: fixed; z-index: 31; inset: 0 0 0 auto; width: min(470px, 100%); display: flex; flex-direction: column; padding: 23px clamp(20px, 4vw, 36px); border-left: 1px solid var(--line); background: var(--surface); box-shadow: -20px 0 60px #10201e24; transform: translateX(103%); transition: transform .34s var(--ease); }
+    .drawer.open { transform: translateX(0); }
+    .drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 15px; border-bottom: 1px solid var(--line); }
+    .drawer-label { color: var(--teal); font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .drawer-title { margin: 4px 0 0; font-size: 19px; font-weight: 760; letter-spacing: -.035em; }
+    .drawer-close { width: 35px; height: 35px; display: grid; flex: none; place-items: center; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); color: var(--muted); font-size: 20px; line-height: 1; }
+    .drawer-body { flex: 1; overflow: auto; overscroll-behavior: contain; padding: 17px 2px 20px 0; }
+    .drawer-intro { margin: 0 0 16px; color: var(--muted); font-size: 11px; line-height: 1.7; }
+    .drawer-form { display: grid; gap: 12px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .form-field { min-width: 0; display: grid; gap: 5px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { color: var(--muted); font-size: 9px; font-weight: 700; }
+    .form-field input, .form-field select, .form-field textarea { width: 100%; min-height: 39px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); color: var(--ink); font-size: 10px; }
+    .form-field textarea { min-height: 86px; resize: vertical; }
+    .form-field input::placeholder, .form-field textarea::placeholder { color: var(--muted); opacity: .8; }
+    .form-check { display: flex; align-items: flex-start; gap: 8px; color: var(--muted); font-size: 9px; line-height: 1.55; }
+    .form-check input { width: 17px; height: 17px; flex: none; margin: 0; accent-color: var(--teal); }
+    .submit-btn { min-height: 40px; padding: 0 14px; border: 1px solid var(--teal); border-radius: 8px; background: var(--teal); color: white; font-size: 10px; font-weight: 800; }
+    :root[data-theme="dark"] .submit-btn { color: #10201e; }
+    .form-message { min-height: 18px; margin: 0; color: var(--teal); font-size: 9px; font-weight: 700; line-height: 1.5; }
+    .form-message.error { color: var(--rose); }
+    .notice-card { padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); color: var(--muted); font-size: 9px; line-height: 1.65; }
+    .notice-card strong { color: var(--ink); }
+    .notice-card + .notice-card { margin-top: 9px; }
+    .drawer-list { display: grid; gap: 9px; }
+    .drawer-list-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); }
+    .list-icon { width: 28px; height: 28px; display: grid; flex: none; place-items: center; border-radius: 8px; background: var(--teal-soft); color: var(--teal); font-size: 10px; font-weight: 800; }
+    .drawer-list-item strong { display: block; font-size: 10px; }
+    .drawer-list-item small { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 218px minmax(0, 1fr); }
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid { grid-template-columns: minmax(0, 1.35fr) minmax(260px, .9fr); }
+      .topbar { gap: 9px; }
+      .top-btn { padding: 0 9px; }
+    }
+    @media (max-width: 790px) {
+      .layout { display: block; }
+      .sidebar { position: fixed; z-index: 21; top: 0; left: 0; width: min(300px, 86vw); height: 100dvh; box-shadow: 16px 0 45px #10201e20; transform: translateX(-105%); transition: transform .3s var(--ease); }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: grid; }
+      .grid { grid-template-columns: 1fr; }
+      .topbar { min-height: 64px; }
+      .crumb { display: none; }
+      .search { width: min(230px, 32vw); }
+      .welcome { align-items: flex-start; }
+      .welcome-date { padding-top: 8px; }
+    }
+    @media (max-width: 520px) {
+      .topbar { gap: 7px; padding: 0 12px; }
+      .top-btn.login { display: none; }
+      .top-btn { min-height: 34px; padding: 0 8px; font-size: 9px; }
+      .icon-btn, .menu-toggle { width: 34px; height: 34px; }
+      .search { width: min(170px, 35vw); }
+      .search input { height: 34px; padding-left: 30px; font-size: 10px; }
+      .search svg { top: 9px; left: 8px; }
+      .content { padding: 20px 13px 25px; }
+      .welcome { display: block; }
+      .welcome-date { padding-top: 9px; }
+      .metric-grid { gap: 8px; }
+      .metric { padding: 11px; }
+      .metric-top { font-size: 7px; }
+      .metric-icon { width: 23px; height: 23px; }
+      .appointment { padding: 15px; }
+      .appointment h2 { font-size: 18px; }
+      .schedule-item { grid-template-columns: 42px 3px minmax(0, 1fr) auto; gap: 7px; }
+      .schedule-tag { padding: 4px 5px; font-size: 6px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-field.full { grid-column: auto; }
+      .site-footer { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="preloader" id="preloader" aria-label="Loading NOVA333X patient portal">
+    <div class="loader-content">
+      <svg class="loader-emblem" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 3.5 40.5 10v12.7c0 10.1-6.7 17.4-16.5 21.8C14.2 40.1 7.5 32.8 7.5 22.7V10L24 3.5Z" stroke="currentColor" stroke-width="1.7"/><path d="M21 13h6v7h7v6h-7v8h-6v-8h-7v-6h7v-7Z" fill="currentColor"/></svg>
+      <div class="loader-name">NOVA333X<small>PATIENT CARE PORTAL</small></div>
+    </div>
+  </div>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar" aria-label="Patient portal navigation">
+      <a class="brand" href="All%20Projects.html" aria-label="NOVA333X portfolio home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M24 3.5 40.5 10v12.7c0 10.1-6.7 17.4-16.5 21.8C14.2 40.1 7.5 32.8 7.5 22.7V10L24 3.5Z" stroke="currentColor" stroke-width="1.7"/><path d="M21 13h6v7h7v6h-7v8h-6v-8h-7v-6h7v-7Z" fill="currentColor"/></svg></span>
+        <span class="brand-name">NOVA333X<small>TELE-HEALTH / CARE</small></span>
+      </a>
+      <div class="patient-card"><span class="avatar" aria-hidden="true">JD</span><span><strong>Welcome, Jordan</strong><small>Patient portal concept</small></span></div>
+      <p class="nav-label">Your care</p>
+      <nav class="side-nav" aria-label="Care navigation">
+        <button class="active" type="button" data-panel="health-summary"><svg viewBox="0 0 20 20"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="12" y="3" width="5" height="5" rx="1"/><rect x="3" y="12" width="5" height="5" rx="1"/><path d="M12 14.5h5m-2.5-2.5v5"/></svg>Health overview</button>
+        <button type="button" data-panel="availability"><svg viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M6.5 2.5v3M13.5 2.5v3M3 8h14m-10 4 2 2 4-4"/></svg>Appointments</button>
+        <button type="button" data-panel="history"><svg viewBox="0 0 20 20"><path d="M4 4h12v13H4zM7 2v4m6-4v4M7 9h6m-6 3h6m-6 3h3"/></svg>Medical records</button>
+        <button type="button" data-panel="prescriptions"><svg viewBox="0 0 20 20"><path d="M6 3h8v14H6zM8 7h4m-2-2v4m-2 3h4"/></svg>Prescriptions</button>
+      </nav>
+      <p class="nav-label">Support & privacy</p>
+      <nav class="side-nav" aria-label="Support and privacy">
+        <button type="button" data-panel="guidelines"><svg viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="m8 7 5 3-5 3V7Z"/></svg>Video visit guide</button>
+        <button type="button" data-panel="privacy"><svg viewBox="0 0 20 20"><rect x="4" y="9" width="12" height="9" rx="2"/><path d="M6.5 9V6a3.5 3.5 0 0 1 7 0v3m-3.5 4v2"/></svg>Privacy & safeguards</button>
+        <button type="button" data-panel="emergency"><svg viewBox="0 0 20 20"><path d="M10 17s-6.5-3.8-6.5-9a3.7 3.7 0 0 1 6.5-2.3A3.7 3.7 0 0 1 16.5 8c0 5.2-6.5 9-6.5 9Z"/><path d="M7 10h2l1-2 1 4 1-2h1"/></svg>Emergency contacts</button>
+      </nav>
+      <div class="side-spacer"></div>
+      <div class="privacy-note"><strong>DEMO · NO PATIENT DATA</strong>This interface is a portfolio concept. It is not connected to a care provider and does not store or transmit health information.</div>
+      <div class="sidebar-foot">NOVA333X / Patient care concept<br>Not for medical use.</div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar"><span></span><span></span></button>
+        <div class="crumb">Patient portal <span aria-hidden="true">/</span> <strong>Overview</strong></div>
+        <div class="top-spacer"></div>
+        <label class="search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg><input id="portalSearch" type="search" maxlength="60" autocomplete="off" placeholder="Search care topics" aria-label="Search care topics"></label>
+        <button class="top-btn login" type="button" data-panel="login">Patient login</button>
+        <button class="top-btn primary" type="button" data-panel="registration">New patient</button>
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch to dark theme" title="Toggle light and dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>
+      </header>
+      <div class="content">
+        <div class="welcome">
+          <div><div class="eyebrow">A calmer way to care</div><h1>Your health, at a glance.</h1><p>A clear snapshot of your care plan and next steps.</p></div>
+          <div class="welcome-date" id="welcomeDate"></div>
+        </div>
+        <div class="demo-banner" role="note"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 9v4m0-7h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span><strong>Concept demo — fictional data.</strong> This showcase is not a real patient portal, is not HIPAA-certified, and is not intended for care decisions. Do not enter real personal or medical information.</span></div>
+        <div class="grid">
+          <div class="column">
+            <section class="card appointment" aria-labelledby="nextVisitTitle">
+              <div class="appointment-top"><span class="eyebrow">Your next visit</span><span class="status"><i class="status-dot"></i>Confirmed · demo</span></div>
+              <h2 id="nextVisitTitle">A check-in, from wherever you are.</h2>
+              <p class="appointment-desc">Your next video consultation is ready to review.</p>
+              <div class="doctor-line"><span class="doctor-avatar" aria-hidden="true">AM</span><span><strong>Dr. Avery Morgan</strong><small>Primary care · Video consultation</small></span></div>
+              <div class="appointment-actions">
+                <button class="action-btn primary" type="button" data-panel="guidelines"><svg viewBox="0 0 20 20"><rect x="2.5" y="4" width="11" height="12" rx="2"/><path d="m13.5 8 4-2v8l-4-2V8Z"/></svg>Visit connection guide</button>
+                <button class="action-btn" type="button" data-panel="availability"><svg viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M6.5 2.5v3M13.5 2.5v3M3 8h14"/></svg>Manage appointment</button>
+              </div>
+            </section>
+            <section class="metric-grid" aria-label="Example health metrics">
+              <article class="metric"><div class="metric-top"><span>Resting heart rate</span><i class="metric-icon rose"><svg viewBox="0 0 20 20"><path d="M2.5 10h3l2-5 3.5 10 2-5h4.5"/></svg></i></div><div class="metric-value">68<span class="metric-unit">bpm</span></div><div class="metric-foot"><strong>Within range</strong><span>· example</span></div><svg class="sparkline" viewBox="0 0 150 29" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="M0 19 14 16 28 18 42 11 56 14 70 8 84 13 98 9 112 15 126 7 140 10 150 5V29H0Z"/><path d="M0 19 14 16 28 18 42 11 56 14 70 8 84 13 98 9 112 15 126 7 140 10 150 5"/></svg></article>
+              <article class="metric"><div class="metric-top"><span>Blood pressure</span><i class="metric-icon blue"><svg viewBox="0 0 20 20"><path d="M3 15V8m4 7V5m4 10v-4m4 4V3m2 12H2"/></svg></i></div><div class="metric-value">118/76</div><div class="metric-foot"><strong>In target</strong><span>· example</span></div><svg class="sparkline" viewBox="0 0 150 29" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="M0 14 14 12 28 16 42 10 56 12 70 8 84 13 98 11 112 15 126 8 140 12 150 7V29H0Z"/><path d="M0 14 14 12 28 16 42 10 56 12 70 8 84 13 98 11 112 15 126 8 140 12 150 7"/></svg></article>
+              <article class="metric"><div class="metric-top"><span>Sleep last night</span><i class="metric-icon blue"><svg viewBox="0 0 20 20"><path d="M15.5 12.5A6.5 6.5 0 0 1 7.5 4a6.5 6.5 0 1 0 8 8.5Z"/><path d="M13 3v3m-1.5-1.5h3m2 4v2m-1-1h2"/></svg></i></div><div class="metric-value">7.4<span class="metric-unit">hrs</span></div><div class="metric-foot"><strong>Restful</strong><span>· example</span></div><svg class="sparkline" viewBox="0 0 150 29" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="M0 18 14 12 28 15 42 9 56 12 70 6 84 10 98 12 112 7 126 11 140 5 150 8V29H0Z"/><path d="M0 18 14 12 28 15 42 9 56 12 70 6 84 10 98 12 112 7 126 11 140 5 150 8"/></svg></article>
+              <article class="metric"><div class="metric-top"><span>Daily movement</span><i class="metric-icon amber"><svg viewBox="0 0 20 20"><path d="M10 17s-6.5-3.8-6.5-9a3.7 3.7 0 0 1 6.5-2.3A3.7 3.7 0 0 1 16.5 8c0 5.2-6.5 9-6.5 9Z"/><path d="M6.5 10h2l1-2 1.5 4 1-2h1.5"/></svg></i></div><div class="metric-value">6,240</div><div class="metric-foot"><strong>Goal 8,000</strong><span>· example</span></div><svg class="sparkline" viewBox="0 0 150 29" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="M0 22 14 18 28 20 42 15 56 17 70 11 84 13 98 7 112 10 126 5 140 8 150 3V29H0Z"/><path d="M0 22 14 18 28 20 42 15 56 17 70 11 84 13 98 7 112 10 126 5 140 8 150 3"/></svg></article>
+            </section>
+            <section class="card" aria-labelledby="trendTitle">
+              <div class="card-head"><div><div class="card-title" id="trendTitle">Wellness trend</div><div class="card-subtitle">A sample weekly resting heart-rate view</div></div><button class="text-action" type="button" data-panel="history">View example history</button></div>
+              <div class="chart-area"><div class="chart-summary"><strong>68 bpm</strong><span id="readingDate">Sample reading</span></div><div class="chart-caption">Illustrative values only — not measured from a person.</div>
+                <svg class="vitals-chart" viewBox="0 0 600 145" preserveAspectRatio="none" role="img" aria-label="Illustrative resting heart rate line chart with sample values">
+                  <line class="gridline" x1="30" y1="22" x2="590" y2="22"/><line class="gridline" x1="30" y1="58" x2="590" y2="58"/><line class="gridline" x1="30" y1="94" x2="590" y2="94"/><line class="gridline" x1="30" y1="126" x2="590" y2="126"/>
+                  <text class="chart-label" x="0" y="25">80</text><text class="chart-label" x="0" y="61">70</text><text class="chart-label" x="0" y="97">60</text>
+                  <path class="area" d="M36 64 C63 70 70 49 112 57 S162 71 192 61 S246 45 278 56 S325 66 358 52 S405 51 438 58 S489 42 518 50 S559 56 584 43 L584 126 L36 126Z"/>
+                  <path class="line" d="M36 64 C63 70 70 49 112 57 S162 71 192 61 S246 45 278 56 S325 66 358 52 S405 51 438 58 S489 42 518 50 S559 56 584 43"/>
+                  <circle cx="36" cy="64" r="3.5"/><circle cx="112" cy="57" r="3.5"/><circle cx="192" cy="61" r="3.5"/><circle cx="278" cy="56" r="3.5"/><circle cx="358" cy="52" r="3.5"/><circle cx="438" cy="58" r="3.5"/><circle cx="518" cy="50" r="3.5"/><circle cx="584" cy="43" r="3.5"/>
+                  <text class="chart-label" x="30" y="141">WED</text><text class="chart-label" x="110" y="141">THU</text><text class="chart-label" x="190" y="141">FRI</text><text class="chart-label" x="275" y="141">SAT</text><text class="chart-label" x="355" y="141">SUN</text><text class="chart-label" x="435" y="141">MON</text><text class="chart-label" x="515" y="141">TUE</text><text class="chart-label" x="567" y="141">TODAY</text>
+                </svg>
+                <div class="chart-legend"><span class="legend-key"><i></i><span>Illustrative resting heart rate</span></span><span>Example only</span></div>
+              </div>
+            </section>
+            <section class="card" aria-labelledby="scheduleTitle">
+              <div class="card-head"><div><div class="card-title" id="scheduleTitle">Upcoming care</div><div class="card-subtitle">Your sample schedule</div></div><button class="text-action" type="button" data-panel="availability">See availability</button></div>
+              <div class="schedule-list">
+                <div class="schedule-item"><time class="schedule-time" data-offset="2" data-time="10:30"></time><i class="schedule-marker"></i><div class="schedule-info"><strong>Primary care check-in</strong><small>Dr. Avery Morgan · Video visit</small></div><span class="schedule-tag">VIDEO</span></div>
+                <div class="schedule-item"><time class="schedule-time" data-offset="6" data-time="14:00"></time><i class="schedule-marker blue"></i><div class="schedule-info"><strong>Wellness follow-up</strong><small>Care team · Secure message</small></div><span class="schedule-tag blue">FOLLOW-UP</span></div>
+                <div class="schedule-item"><time class="schedule-time" data-offset="14" data-time="09:00"></time><i class="schedule-marker amber"></i><div class="schedule-info"><strong>Annual health review</strong><small>Dr. Avery Morgan · In person</small></div><span class="schedule-tag amber">VISIT</span></div>
+              </div>
+            </section>
+          </div>
+          <div class="column">
+            <section class="card" aria-labelledby="careTitle">
+              <div class="card-head"><div><div class="card-title" id="careTitle">Care shortcuts</div><div class="card-subtitle">Common next steps</div></div></div>
+              <div class="care-list">
+                <div class="care-item"><i class="care-icon teal"><svg viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M6.5 2.5v3M13.5 2.5v3M3 8h14m-7 2v5m-2.5-2.5h5"/></svg></i><span class="care-info"><strong>Book a consultation</strong><small>Choose a visit type and preferred time</small></span><button class="text-action" type="button" data-panel="booking">Book</button></div>
+                <div class="care-item"><i class="care-icon"><svg viewBox="0 0 20 20"><path d="M6 3h8v14H6zM8 7h4m-2-2v4m-2 3h4"/></svg></i><span class="care-info"><strong>Prescription refill</strong><small>Request a review from your care team</small></span><button class="text-action" type="button" data-panel="refill">Request</button></div>
+                <div class="care-item"><i class="care-icon amber"><svg viewBox="0 0 20 20"><path d="M3 5h14v11H3zM3 7l7 5 7-5M6 3v4m8-4v4"/></svg></i><span class="care-info"><strong>Insurance details</strong><small>Review the sample verification workflow</small></span><button class="text-action" type="button" data-panel="insurance">Review</button></div>
+                <div class="care-item"><i class="care-icon teal"><svg viewBox="0 0 20 20"><path d="M4 3h12v14H4zM7 7h6m-6 3h6m-6 3h3"/></svg></i><span class="care-info"><strong>Health history</strong><small>See the example intake form</small></span><button class="text-action" type="button" data-panel="intake">Open</button></div>
+              </div>
+            </section>
+            <section class="card" aria-labelledby="doctorTitle">
+              <div class="card-head"><div><div class="card-title" id="doctorTitle">Care team</div><div class="card-subtitle">Sample availability · not live</div></div><button class="text-action" type="button" data-panel="availability">All doctors</button></div>
+              <div class="doctor-card"><span class="doctor-photo" aria-hidden="true">AM</span><span class="doctor-info"><strong>Dr. Avery Morgan</strong><small>Primary care · Family medicine</small><span class="available"><i></i>Example availability: Thu, 10:30</span></span></div>
+              <div class="doctor-card" style="border-top:1px solid var(--line)"><span class="doctor-photo" style="background:var(--teal-soft);color:var(--teal)" aria-hidden="true">SL</span><span class="doctor-info"><strong>Dr. Sam Lee</strong><small>Behavioral wellness · Adult care</small><span class="available"><i></i>Example availability: Fri, 14:00</span></span></div>
+              <div class="doctor-card" style="border-top:1px solid var(--line)"><span class="doctor-photo" style="background:var(--rose-soft);color:var(--rose)" aria-hidden="true">PN</span><span class="doctor-info"><strong>Dr. Priya Nair</strong><small>Cardiology · Heart health</small><span class="available"><i></i>Example availability: Mon, 09:30</span></span></div>
+              <div class="doctor-card" style="border-top:1px solid var(--line)"><span class="doctor-photo" style="background:var(--amber-soft);color:var(--amber)" aria-hidden="true">JR</span><span class="doctor-info"><strong>Dr. Julian Reyes</strong><small>Neurology · General neurology</small><span class="available"><i></i>Example availability: Tue, 11:00</span></span></div>
+              <div class="doctor-card" style="border-top:1px solid var(--line)"><span class="doctor-photo" style="background:var(--blue-soft);color:var(--blue)" aria-hidden="true">EC</span><span class="doctor-info"><strong>Dr. Elise Chen</strong><small>Behavioral health · Psychiatry</small><span class="available"><i></i>Example availability: Wed, 13:30</span></span></div>
+              <div class="doctor-card" style="border-top:1px solid var(--line)"><span class="doctor-photo" style="background:var(--teal-soft);color:var(--teal)" aria-hidden="true">MK</span><span class="doctor-info"><strong>Dr. Marcus King</strong><small>Primary care · Internal medicine</small><span class="available"><i></i>Example availability: Thu, 15:00</span></span></div>
+            </section>
+            <section class="card" aria-labelledby="recordsTitle">
+              <div class="card-head"><div><div class="card-title" id="recordsTitle">Recent record activity</div><div class="card-subtitle">Fictional example entries</div></div><button class="text-action" type="button" data-panel="history">View all</button></div>
+              <div class="care-list">
+                <div class="care-item"><i class="care-icon blue"><svg viewBox="0 0 20 20"><path d="M4 3h12v14H4zM7 7h6m-6 3h6m-6 3h3"/></svg></i><span class="care-info"><strong>Wellness summary</strong><small>Example document · No patient data</small></span><span class="schedule-tag blue">SAMPLE</span></div>
+                <div class="care-item"><i class="care-icon amber"><svg viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg></i><span class="care-info"><strong>Care plan updated</strong><small>Example event · No active care plan</small></span><span class="schedule-tag amber">SAMPLE</span></div>
+              </div>
+            </section>
+            <section class="card" aria-labelledby="doctorAccessTitle">
+              <div class="card-head"><div><div class="card-title" id="doctorAccessTitle">Need a clinician?</div><div class="card-subtitle">Browse the fictional care team</div></div></div>
+              <div style="padding:14px 15px"><p style="margin:0 0 11px;color:var(--muted);font-size:10px;line-height:1.6">Choose an example visit type and explore the appointment flow. No real appointment is created.</p><button class="action-btn primary" type="button" data-panel="booking">Explore appointment booking</button></div>
+            </section>
+          </div>
+        </div>
+        <div class="privacy-footer"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2 17 5v5c0 4-3 6.5-7 8-4-1.5-7-4-7-8V5l7-3Z" stroke="currentColor" stroke-width="1.5"/><path d="m7 10 2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Privacy by design, concept only.</strong> This frontend stores no patient data and makes no network requests. It is not a clinical system, does not provide medical advice, and has not been assessed for HIPAA compliance.</span></div>
+        <footer class="site-footer">
+          <div class="footer-copy"><strong>NOVA333X · Tele-Health Patient Portal</strong><span>© <span id="copyrightYear"></span> NOVA333X. Interface concept only.</span><span>Not a healthcare service, not HIPAA-certified, and not for medical use.</span></div>
+          <nav class="footer-social" aria-label="NOVA333X social profiles">
+            <a href="https://www.upwork.com" target="_blank" rel="noopener noreferrer" aria-label="Upwork profile" title="Upwork">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.3 7.1c-1.95 0-3.42 1.22-4.18 3.12-.78-1.16-1.38-2.45-1.75-3.9H8.55v5.02c0 1.08-.88 1.96-1.96 1.96s-1.96-.88-1.96-1.96V6.32H1.95v5.02a4.64 4.64 0 0 0 8.98 1.62c.6.82 1.28 1.58 2.06 2.22l-1.4 6.5h2.75l1.07-4.95c.59.19 1.2.29 1.83.29 2.74 0 4.82-2.03 4.82-4.83 0-2.92-2.04-5.09-4.76-5.09Zm-.02 7.5c-.56 0-1.1-.14-1.62-.42l.48-2.23c.33-1.53.85-2.34 1.68-2.34.95 0 1.58 1 1.58 2.5 0 1.5-.83 2.49-2.12 2.49Z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 2H3.55C2.69 2 2 2.68 2 3.52v16.96c0 .84.69 1.52 1.55 1.52h16.9c.86 0 1.55-.68 1.55-1.52V3.52c0-.84-.69-1.52-1.55-1.52ZM7.93 18.34H4.96V9.5h2.97v8.84ZM6.45 8.29a1.72 1.72 0 1 1 0-3.44 1.72 1.72 0 0 1 0 3.44Zm11.89 10.05h-2.96v-4.3c0-1.03-.02-2.35-1.43-2.35-1.43 0-1.65 1.12-1.65 2.28v4.37H9.34V9.5h2.84v1.21h.04c.4-.73 1.36-1.5 2.8-1.5 3 0 3.55 1.97 3.55 4.54v4.59Z"/></svg>
+            </a>
+            <a href="https://github.com/yusufiexweb" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" title="GitHub">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .9a11.2 11.2 0 0 0-3.54 21.83c.56.1.76-.24.76-.54v-2.1c-3.1.68-3.76-1.32-3.76-1.32-.5-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.73 1.16 1.73 1.16 1 .1.76.09 2.45 1.56.9.15 1.85-.1 2.45-.37.1-.72.4-1.2.72-1.48-2.48-.28-5.08-1.24-5.08-5.52 0-1.22.44-2.22 1.16-3 .12-.28-.5-1.43.1-2.97 0 0 .95-.3 3.08 1.15a10.7 10.7 0 0 1 5.6 0c2.13-1.45 3.08-1.15 3.08-1.15.6 1.54.22 2.69.1 2.97.72.78 1.16 1.78 1.16 3 0 4.3-2.6 5.23-5.1 5.5.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.77.54A11.2 11.2 0 0 0 12 .9Z"/></svg>
+            </a>
+          </nav>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+    <div class="drawer-head"><div><div class="drawer-label" id="drawerLabel">Patient care</div><h2 class="drawer-title" id="drawerTitle">Information</h2></div><button class="drawer-close" id="drawerClose" type="button" aria-label="Close panel">×</button></div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+  <template id="panel-login"><p class="drawer-intro">This is a non-functional sign-in preview. No account is created, and credentials must never be entered into this demo.</p><form class="drawer-form" data-demo-form><div class="form-field"><label for="loginEmail">Email address</label><input id="loginEmail" type="email" autocomplete="off" maxlength="120" placeholder="name@example.com" required></div><div class="form-field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="new-password" maxlength="128" placeholder="Demo only — do not enter a password" required></div><button class="submit-btn" type="submit">Preview patient sign-in</button><p class="form-message" aria-live="polite" data-form-message></p><div class="notice-card"><strong>Demo safety:</strong> this form does not authenticate, transmit, or save credentials. Do not use real information.</div></form></template>
+  <template id="panel-registration"><p class="drawer-intro">Explore a sample new-patient profile flow. Do not enter real identity, insurance, or medical details.</p><form class="drawer-form" data-demo-form><div class="form-grid"><div class="form-field"><label for="registerFirst">First name</label><input id="registerFirst" autocomplete="off" maxlength="60" required></div><div class="form-field"><label for="registerLast">Last name</label><input id="registerLast" autocomplete="off" maxlength="60" required></div><div class="form-field"><label for="registerEmail">Email address</label><input id="registerEmail" type="email" autocomplete="off" maxlength="120" required></div><div class="form-field"><label for="registerPhone">Phone (optional)</label><input id="registerPhone" type="tel" autocomplete="off" maxlength="32" placeholder="Sample number only"></div><div class="form-field full"><label for="registerVisit">Preferred care</label><select id="registerVisit"><option>Primary care</option><option>Behavioral wellness</option><option>Preventive care</option></select></div></div><label class="form-check"><input type="checkbox" required><span>I understand this is a fictional interface and will not submit actual patient information.</span></label><button class="submit-btn" type="submit">Preview registration</button><p class="form-message" aria-live="polite" data-form-message></p></form></template>
+  <template id="panel-booking"><p class="drawer-intro">Select a sample visit preference to preview the scheduling flow. No appointment will be booked and availability is fictional.</p><form class="drawer-form" data-demo-form><div class="form-grid"><div class="form-field"><label for="bookingType">Visit type</label><select id="bookingType" required><option value="">Choose a visit</option><option>Primary care video visit</option><option>Cardiology consultation</option><option>Neurology consultation</option><option>Behavioral health consultation</option><option>Psychiatry follow-up</option><option>Wellness follow-up</option><option>Preventive care consultation</option></select></div><div class="form-field"><label for="bookingDepartment">Department</label><select id="bookingDepartment" required><option value="">Choose a department</option><option>Family medicine</option><option>Internal medicine</option><option>Cardiology</option><option>Neurology</option><option>Behavioral health</option><option>Psychiatry</option><option>Preventive care</option></select></div><div class="form-field full"><label for="bookingClinic">Select a clinic</label><select id="bookingClinic" required><option value="">Choose a sample clinic</option><option>Northside Family Health · Primary care</option><option>Harbor Internal Medicine · Primary care</option><option>Greenway Heart & Vascular · Cardiology</option><option>Riverside Neurology Center · Neurology</option><option>Willow Behavioral Wellness · Mental health</option><option>Parkview Psychiatry Clinic · Psychiatry</option><option>Community Preventive Care · Wellness</option></select></div><div class="form-field full"><label for="bookingClinician">Choose a clinician</label><select id="bookingClinician" required><option value="">Choose a clinician</option><option>Dr. Avery Morgan · Primary care</option><option>Dr. Marcus King · Internal medicine</option><option>Dr. Priya Nair · Cardiology</option><option>Dr. Julian Reyes · Neurology</option><option>Dr. Sam Lee · Behavioral wellness</option><option>Dr. Elise Chen · Psychiatry</option><option>Dr. Nadia Patel · Preventive care</option></select></div><div class="form-field"><label for="bookingDate">Preferred date</label><input id="bookingDate" type="date" required></div><div class="form-field"><label for="bookingTime">Preferred time</label><select id="bookingTime" required><option value="">Choose a time</option><option>09:00</option><option>10:30</option><option>13:00</option><option>14:30</option></select></div><div class="form-field full"><label for="bookingNote">Optional note (no health details)</label><textarea id="bookingNote" maxlength="180" placeholder="Use only fictional, non-sensitive text"></textarea></div></div><button class="submit-btn" type="submit">Preview appointment request</button><p class="form-message" aria-live="polite" data-form-message></p></form></template>
+  <template id="panel-refill"><p class="drawer-intro">A prescription refill should be handled by your licensed clinician or pharmacy. This preview does not request, prescribe, or renew medication.</p><form class="drawer-form" data-demo-form><div class="form-grid"><div class="form-field"><label for="refillName">Sample medication label</label><input id="refillName" maxlength="80" autocomplete="off" placeholder="Do not enter real medication details" required></div><div class="form-field"><label for="refillPharmacy">Preferred pharmacy (optional)</label><input id="refillPharmacy" maxlength="80" autocomplete="off" placeholder="Fictional example only"></div><div class="form-field full"><label for="refillNote">Request note (no medical details)</label><textarea id="refillNote" maxlength="180" placeholder="This form is not sent to a clinician"></textarea></div></div><button class="submit-btn" type="submit">Preview refill request</button><p class="form-message" aria-live="polite" data-form-message></p></form></template>
+  <template id="panel-intake"><p class="drawer-intro">Example intake structure for health history. Actual patient intake must use a secure, provider-approved system and appropriate consent.</p><form class="drawer-form" data-demo-form><div class="form-grid"><div class="form-field full"><label for="intakeGoals">What would you like your care team to focus on? (demo only)</label><textarea id="intakeGoals" maxlength="240" placeholder="Do not include real symptoms or personal medical information"></textarea></div><div class="form-field"><label for="intakeLanguage">Preferred language</label><select id="intakeLanguage"><option>English</option><option>Azərbaycan dili</option><option>Español</option><option>Other</option></select></div><div class="form-field"><label for="intakeContact">Preferred contact</label><select id="intakeContact"><option>Portal message</option><option>Phone (sample)</option><option>Email (sample)</option></select></div><div class="form-field full"><label for="intakeAllergy">Allergy section example</label><input id="intakeAllergy" maxlength="120" autocomplete="off" placeholder="Leave blank; do not enter real health details"></div></div><label class="form-check"><input type="checkbox" required><span>This is a design preview only; I will not enter real health information.</span></label><button class="submit-btn" type="submit">Preview intake layout</button><p class="form-message" aria-live="polite" data-form-message></p></form></template>
+  <template id="panel-insurance"><p class="drawer-intro">Insurance verification requires a properly secured provider workflow. This concept does not collect identifiers or verify coverage.</p><form class="drawer-form" data-demo-form><div class="form-grid"><div class="form-field"><label for="insuranceProvider">Sample provider name</label><input id="insuranceProvider" maxlength="80" autocomplete="off" placeholder="Example only" required></div><div class="form-field"><label for="insurancePlan">Plan type</label><select id="insurancePlan"><option>Employer plan</option><option>Individual plan</option><option>Public coverage</option><option>Other</option></select></div><div class="form-field full"><label for="insuranceId">Member or policy ID</label><input id="insuranceId" maxlength="40" autocomplete="off" placeholder="Do not enter a real member ID"></div></div><button class="submit-btn" type="submit">Preview verification workflow</button><p class="form-message" aria-live="polite" data-form-message></p><div class="notice-card"><strong>No coverage check:</strong> this form has no insurance integration and discards its temporary preview when closed.</div></form></template>
+  <template id="panel-emergency"><p class="drawer-intro">Emergency contact registration belongs in a secure care-provider system. This form is a layout preview only; do not enter real contact details.</p><form class="drawer-form" data-demo-form><div class="form-grid"><div class="form-field"><label for="emergencyName">Contact name</label><input id="emergencyName" maxlength="80" autocomplete="off" required></div><div class="form-field"><label for="emergencyRelation">Relationship</label><select id="emergencyRelation"><option>Family</option><option>Friend</option><option>Caregiver</option><option>Other</option></select></div><div class="form-field"><label for="emergencyPhone">Contact phone</label><input id="emergencyPhone" type="tel" maxlength="32" autocomplete="off" placeholder="Fictional number only" required></div><div class="form-field"><label for="emergencyEmail">Contact email (optional)</label><input id="emergencyEmail" type="email" maxlength="120" autocomplete="off"></div></div><button class="submit-btn" type="submit">Preview contact form</button><p class="form-message" aria-live="polite" data-form-message></p></form></template>
+  <template id="panel-availability"><p class="drawer-intro">Illustrative appointment windows and clinician profiles only. Availability is not live and selecting a slot will not book a visit.</p><div class="drawer-list"><div class="drawer-list-item"><span class="list-icon">AM</span><span><strong>Dr. Avery Morgan · Family medicine</strong><small>Northside Family Health · Example: Thu, 10:30 · Fri, 13:00</small></span></div><div class="drawer-list-item"><span class="list-icon">MK</span><span><strong>Dr. Marcus King · Internal medicine</strong><small>Harbor Internal Medicine · Example: Thu, 15:00 · Mon, 11:00</small></span></div><div class="drawer-list-item"><span class="list-icon">PN</span><span><strong>Dr. Priya Nair · Cardiology</strong><small>Greenway Heart & Vascular · Example: Mon, 09:30 · Wed, 14:00</small></span></div><div class="drawer-list-item"><span class="list-icon">JR</span><span><strong>Dr. Julian Reyes · Neurology</strong><small>Riverside Neurology Center · Example: Tue, 11:00 · Fri, 09:00</small></span></div><div class="drawer-list-item"><span class="list-icon">SL</span><span><strong>Dr. Sam Lee · Behavioral wellness</strong><small>Willow Behavioral Wellness · Example: Fri, 14:00 · Mon, 09:00</small></span></div><div class="drawer-list-item"><span class="list-icon">EC</span><span><strong>Dr. Elise Chen · Psychiatry</strong><small>Parkview Psychiatry Clinic · Example: Wed, 13:30 · Thu, 09:00</small></span></div><div class="drawer-list-item"><span class="list-icon">NP</span><span><strong>Dr. Nadia Patel · Preventive care</strong><small>Community Preventive Care · Example: Tue, 10:00 · Fri, 15:00</small></span></div></div><div style="margin-top:13px"><button class="action-btn primary" type="button" data-panel="booking">Open sample booking form</button></div></template>
+  <template id="panel-guidelines"><p class="drawer-intro">A future telehealth service should provide clear pre-visit instructions and a secure, provider-approved video platform.</p><div class="drawer-list"><div class="drawer-list-item"><span class="list-icon">01</span><span><strong>Choose a private space</strong><small>Use a quiet room and a network you trust. Avoid shared or public devices for real care.</small></span></div><div class="drawer-list-item"><span class="list-icon">02</span><span><strong>Check your setup</strong><small>Confirm camera, microphone, and connection before a real appointment.</small></span></div><div class="drawer-list-item"><span class="list-icon">03</span><span><strong>Use the provider's official link</strong><small>This showcase does not contain a video call, consultation link, or clinician connection.</small></span></div></div><div class="notice-card" style="margin-top:12px"><strong>Urgent concern?</strong> This demo is not monitored. Contact your local emergency services or a licensed healthcare professional for urgent care.</div></template>
+  <template id="panel-history"><p class="drawer-intro">This is an example of a medical record history view. All entries shown here are fictional placeholders, not actual clinical records.</p><div class="drawer-list"><div class="drawer-list-item"><span class="list-icon">01</span><span><strong>Wellness metric summary</strong><small>Sample values · No patient data</small></span></div><div class="drawer-list-item"><span class="list-icon">02</span><span><strong>Care visit summary</strong><small>Illustrative record · Not clinician-authored</small></span></div><div class="drawer-list-item"><span class="list-icon">03</span><span><strong>Care plan example</strong><small>Mock event · Not an active care plan</small></span></div></div><div class="notice-card" style="margin-top:12px"><strong>Record access:</strong> no medical records are connected to or stored by this frontend.</div></template>
+  <template id="panel-prescriptions"><p class="drawer-intro">Prescription details should be confirmed with the prescribing clinician or dispensing pharmacy. The entries below demonstrate a tracker layout only.</p><div class="drawer-list"><div class="drawer-list-item"><span class="list-icon">Rx</span><span><strong>Prescription tracker example</strong><small>Status: sample renewal reminder · No medication details on file</small></span></div><div class="drawer-list-item"><span class="list-icon">Rx</span><span><strong>Pharmacy coordination</strong><small>Not connected · No prescription transmitted or refilled</small></span></div></div><div style="margin-top:13px"><button class="action-btn primary" type="button" data-panel="refill">Open refill preview</button></div></template>
+  <template id="panel-privacy"><p class="drawer-intro">Privacy and healthcare compliance require operational, technical, and organizational safeguards beyond the appearance of an interface.</p><div class="drawer-list"><div class="drawer-list-item"><span class="list-icon">01</span><span><strong>This is not HIPAA-compliant infrastructure</strong><small>No compliance assessment, covered-entity relationship, business associate agreement, or production security controls are provided.</small></span></div><div class="drawer-list-item"><span class="list-icon">02</span><span><strong>No data transmission</strong><small>Forms are local demos. This page makes no API or network requests and does not save form content.</small></span></div><div class="drawer-list-item"><span class="list-icon">03</span><span><strong>Do not enter real information</strong><small>Avoid real names, contact details, insurance identifiers, passwords, symptoms, or other sensitive data.</small></span></div></div></template>
+  <template id="panel-health-summary"><p class="drawer-intro">The overview combines fictional wellness values and sample care reminders to illustrate a patient-friendly information hierarchy.</p><div class="notice-card"><strong>Health metrics shown:</strong> heart rate, blood pressure, sleep, and movement values on this page are made-up examples. They are not measurements and should not inform medical decisions.</div><div class="notice-card"><strong>Care summaries shown:</strong> appointments, providers, and records are placeholders. No provider or patient account is connected.</div></template>
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const preloader = document.getElementById("preloader");
+      const sidebar = document.getElementById("sidebar");
+      const menuToggle = document.getElementById("menuToggle");
+      const themeToggle = document.getElementById("themeToggle");
+      const overlay = document.getElementById("overlay");
+      const drawer = document.getElementById("drawer");
+      const drawerLabel = document.getElementById("drawerLabel");
+      const drawerTitle = document.getElementById("drawerTitle");
+      const drawerBody = document.getElementById("drawerBody");
+      const drawerClose = document.getElementById("drawerClose");
+      const search = document.getElementById("portalSearch");
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const panelTitles = {
+        login: ["Account access", "Patient login"],
+        registration: ["Getting started", "New patient registration"],
+        booking: ["Care scheduling", "Book a consultation"],
+        refill: ["Medication support", "Prescription refill"],
+        intake: ["Patient forms", "Health history intake"],
+        insurance: ["Coverage workflow", "Insurance verification"],
+        emergency: ["Care contacts", "Emergency contact registry"],
+        availability: ["Care team", "Live doctor availability"],
+        guidelines: ["Telehealth support", "Video visit guidelines"],
+        history: ["Your records", "Medical record history"],
+        prescriptions: ["Medication support", "Prescription tracker"],
+        privacy: ["Data protection", "Privacy & safeguards"],
+        "health-summary": ["Patient overview", "Health summary"]
+      };
+      let previousFocus = null;
+      let activePanel = "";
+
+      function sanitizeUserInput(value, maxLength) {
+        return String(value).slice(0, maxLength).replace(/[<>]/g, "").trim();
+      }
+      function closeMenu() {
+        sidebar.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Open navigation");
+      }
+      function closeDrawer() {
+        drawer.classList.remove("open");
+        overlay.classList.remove("open");
+        drawer.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        activePanel = "";
+        drawerBody.replaceChildren();
+        if (previousFocus && document.contains(previousFocus)) previousFocus.focus();
+      }
+      function openDrawer(key, trigger) {
+        const template = document.getElementById("panel-" + key);
+        const title = panelTitles[key];
+        if (!template || !title) return;
+        closeMenu();
+        previousFocus = trigger || document.activeElement;
+        activePanel = key;
+        drawerLabel.textContent = title[0];
+        drawerTitle.textContent = title[1];
+        drawerBody.replaceChildren(template.content.cloneNode(true));
+        drawer.classList.add("open");
+        overlay.classList.add("open");
+        drawer.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        const firstControl = drawerBody.querySelector("input, select, textarea, button");
+        window.requestAnimationFrame(() => (firstControl || drawerClose).focus());
+      }
+      function setExampleDates() {
+        const now = new Date();
+        document.getElementById("copyrightYear").textContent = String(now.getFullYear());
+        document.getElementById("welcomeDate").textContent = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(now);
+        document.getElementById("readingDate").textContent = "Sample reading · " + new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(now);
+        document.querySelectorAll(".schedule-time[data-offset]").forEach(time => {
+          const date = new Date(now);
+          date.setDate(date.getDate() + Number(time.dataset.offset));
+          const dateLabel = new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(date).toUpperCase();
+          time.dateTime = date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0") + "T" + time.dataset.time;
+          time.textContent = dateLabel + "\n" + time.dataset.time;
+        });
+      }
+      menuToggle.addEventListener("click", () => {
+        const open = !sidebar.classList.contains("open");
+        sidebar.classList.toggle("open", open);
+        menuToggle.setAttribute("aria-expanded", String(open));
+        menuToggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+      });
+      themeToggle.addEventListener("click", () => {
+        const next = root.dataset.theme === "dark" ? "light" : "dark";
+        root.dataset.theme = next;
+        themeToggle.setAttribute("aria-label", "Switch to " + (next === "dark" ? "light" : "dark") + " theme");
+        document.querySelector('meta[name="theme-color"]').setAttribute("content", next === "dark" ? "#10191c" : "#eff5f4");
+      });
+      document.addEventListener("click", event => {
+        const trigger = event.target.closest("[data-panel]");
+        if (trigger) {
+          if (drawerBody.contains(trigger)) return;
+          event.preventDefault();
+          openDrawer(trigger.dataset.panel, trigger);
+          document.querySelectorAll(".side-nav button").forEach(button => button.classList.toggle("active", button.dataset.panel === trigger.dataset.panel));
+          return;
+        }
+        if (sidebar.classList.contains("open") && !sidebar.contains(event.target) && !menuToggle.contains(event.target)) closeMenu();
+      });
+      overlay.addEventListener("click", closeDrawer);
+      drawerClose.addEventListener("click", closeDrawer);
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+          if (drawer.classList.contains("open")) closeDrawer();
+          else closeMenu();
+        }
+        if (event.key === "Tab" && drawer.classList.contains("open")) {
+          const focusable = Array.from(drawer.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')).filter(element => element.offsetParent !== null);
+          if (!focusable.length) return;
+          if (event.shiftKey && document.activeElement === focusable[0]) { event.preventDefault(); focusable[focusable.length - 1].focus(); }
+          else if (!event.shiftKey && document.activeElement === focusable[focusable.length - 1]) { event.preventDefault(); focusable[0].focus(); }
+        }
+      });
+      drawerBody.addEventListener("click", event => {
+        const trigger = event.target.closest("[data-panel]");
+        if (trigger) {
+          event.preventDefault();
+          openDrawer(trigger.dataset.panel, trigger);
+        }
+      });
+      drawerBody.addEventListener("submit", event => {
+        const form = event.target.closest("[data-demo-form]");
+        if (!form) return;
+        event.preventDefault();
+        const message = form.querySelector("[data-form-message]");
+        if (!message) return;
+        let invalid = false;
+        for (const field of form.querySelectorAll("[required]")) {
+          if (field.type === "checkbox" ? !field.checked : !field.checkValidity() || !sanitizeUserInput(field.value, field.maxLength > 0 ? field.maxLength : 256)) {
+            invalid = true;
+            field.setAttribute("aria-invalid", "true");
+          } else {
+            field.removeAttribute("aria-invalid");
+          }
+        }
+        if (invalid) {
+          message.textContent = "Complete the required demo fields with non-sensitive sample information.";
+          message.classList.add("error");
+          return;
+        }
+        message.classList.remove("error");
+        message.textContent = "Preview complete. No information was sent or saved.";
+        form.reset();
+      });
+      search.addEventListener("input", () => {
+        const query = sanitizeUserInput(search.value, 60).toLowerCase();
+        document.querySelectorAll(".care-item, .schedule-item, .metric, .card").forEach(item => {
+          const text = sanitizeUserInput(item.textContent, 500).toLowerCase();
+          item.hidden = Boolean(query) && !text.includes(query);
+        });
+        if (!query) document.querySelectorAll("[hidden]").forEach(item => item.hidden = false);
+      });
+      setExampleDates();
+      window.setTimeout(() => preloader.classList.add("done"), reduceMotion ? 0 : 650);
+    })();
+  </script>
+</body>
+</html>
